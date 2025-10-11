@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # SQL Server database
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=DurgaServer2024!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-server-data:/var/opt/mssql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P DurgaServer2024! -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # .NET API
+  durga-api:
+    build:
+      context: ./Durga.Api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      sql-server:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sql-server,1433;Database=DurgaDb;User Id=sa;Password=DurgaServer2024!;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - JWT__SecretKey=ThisIsAVeryLongSecretKeyForJWTTokens123456789
+      - JWT__Issuer=Durga.Api
+      - JWT__Audience=Durga.Client
+      - JWT__ExpiryInDays=7
+    restart: unless-stopped
+    volumes:
+      - ./Durga.Api:/app/source
+    networks:
+      - durga-network
+
+networks:
+  durga-network:
+    driver: bridge
+
+volumes:
+  sql-server-data:

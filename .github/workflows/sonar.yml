@@ -43,5 +43,5 @@ jobs:
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"LendaVadym_durga" /o:"lendavadym" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
+          dotnet build server/Durga.sln
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

@@ -245,15 +245,19 @@ public class VulnerableController : ControllerBase
     [HttpGet("read-file")]
     public IActionResult ReadFile([FromQuery] string fileName)
     {
-        // Vulnerability: Path traversal attack
-        var filePath = Path.Combine("/app/files", fileName);
-        
+        // Fix: Prevent path traversal by checking file path is within the allowed folder
+        var baseDir = Path.GetFullPath("/app/files");
+        var filePath = Path.GetFullPath(Path.Combine(baseDir, fileName));
+        if (!filePath.StartsWith(baseDir + Path.DirectorySeparatorChar))
+        {
+            // Reject with BadRequest if path is outside the allowed directory
+            return BadRequest(new { Error = "Invalid file path" });
+        }
         if (System.IO.File.Exists(filePath))
         {
             var content = System.IO.File.ReadAllText(filePath);
             return Ok(new { Content = content });
         }
-        
         return NotFound();
     }
 }

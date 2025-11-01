@@ -1,0 +1,80 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4">Login</h2>
+          
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+            <!-- Username Field -->
+            <div class="mb-3">
+              <label for="username" class="form-label">User Name</label>
+              <input 
+                type="text" 
+                class="form-control"
+                [class.is-invalid]="username.invalid && username.touched"
+                [class.is-valid]="username.valid && username.touched"
+                id="username" 
+                formControlName="username"
+                placeholder="Enter your username">
+              @if (username.invalid && username.touched) {
+                <div class="invalid-feedback">
+                  @if (username.errors?.['required']) {
+                    <div>Username is required</div>
+                  }
+                  @if (username.errors?.['minlength']) {
+                    <div>Username must be at least 3 characters long</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input 
+                type="password" 
+                class="form-control"
+                [class.is-invalid]="password.invalid && password.touched"
+                [class.is-valid]="password.valid && password.touched"
+                id="password" 
+                formControlName="password"
+                placeholder="Enter your password">
+              @if (password.invalid && password.touched) {
+                <div class="invalid-feedback">
+                  @if (password.errors?.['required']) {
+                    <div>Password is required</div>
+                  }
+                  @if (password.errors?.['minlength']) {
+                    <div>Password must be at least 6 characters long</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid mb-3">
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="loginForm.invalid || isSubmitting()">
+                @if (isSubmitting()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Logging in...
+                } @else {
+                  Login
+                }
+              </button>
+            </div>
+          </form>
+
+          <!-- Create New User Link -->
+          <div class="text-center">
+            <p class="text-muted mb-2">Don't have an account?</p>
+            <a routerLink="/create-user" class="btn btn-outline-secondary">Create new user</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

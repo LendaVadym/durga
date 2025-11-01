@@ -1,0 +1,42 @@
+// Design System Variables
+
+// Color palette
+$primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+$primary-gradient-hover: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+$primary-color: #667eea;
+$primary-color-hover: #5a6fd8;
+
+// Bootstrap color overrides
+$success-color: #28a745;
+$danger-color: #dc3545;
+$light-gray: #e9ecef;
+$text-muted: #6c757d;
+
+// Spacing
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+
+// Border radius
+$border-radius-sm: 10px;
+$border-radius-md: 15px;
+
+// Shadows
+$shadow-card: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+$shadow-focus: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+
+// Transitions
+$transition-base: all 0.3s ease;
+
+// Typography
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+
+// Breakpoints
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;

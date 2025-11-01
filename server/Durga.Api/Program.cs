@@ -4,16 +4,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Durga.Api.Data;
-using Durga.Api.Models;
+using Durga.Api.Infrastructure.Identity;
+using Durga.Api.Application.Ports;
+using Durga.Api.Infrastructure.Adapters.Persistence;
+using Durga.Api.Infrastructure.Adapters.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// Entity Framework
+// Entity Framework - PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Hexagonal Architecture DbContext
+builder.Services.AddDbContext<DurgaDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Repository pattern - Hexagonal Architecture
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -124,18 +134,37 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Auto-migrate database on startup
+// Test database connections on startup
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    // Test Identity DbContext connection
+    var identityContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-        context.Database.Migrate();
+        if (identityContext.Database.CanConnect())
+        {
+            logger.LogInformation("Identity database connection successful.");
+        }
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating the database.");
+        logger.LogError(ex, "An error occurred while connecting to the Identity database.");
+    }
+
+    // Test Durga DbContext connection
+    var durgaContext = scope.ServiceProvider.GetRequiredService<DurgaDbContext>();
+    try
+    {
+        if (durgaContext.Database.CanConnect())
+        {
+            logger.LogInformation("Durga database connection successful.");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while connecting to the Durga database.");
     }
 }
 

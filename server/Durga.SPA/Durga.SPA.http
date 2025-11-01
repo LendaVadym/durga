@@ -1,0 +1,6 @@
+@Durga.SPA_HostAddress = http://localhost:5053
+
+GET {{Durga.SPA_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

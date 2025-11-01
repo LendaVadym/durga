@@ -1,0 +1,260 @@
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h2 class="card-title text-center mb-4">Create New User</h2>
+          
+          <form [formGroup]="createUserForm" (ngSubmit)="onSubmit()" novalidate>
+            <div class="row">
+              <!-- User ID Field -->
+              <div class="col-12 mb-3">
+                <label for="userId" class="form-label">User ID</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="userId.invalid && userId.touched"
+                  [class.is-valid]="userId.valid && userId.touched"
+                  id="userId" 
+                  formControlName="userId"
+                  placeholder="Enter unique user ID">
+                @if (userId.invalid && userId.touched) {
+                  <div class="invalid-feedback">
+                    @if (userId.errors?.['required']) {
+                      <div>User ID is required</div>
+                    }
+                    @if (userId.errors?.['minlength']) {
+                      <div>User ID must be at least 3 characters long</div>
+                    }
+                    @if (userId.errors?.['maxlength']) {
+                      <div>User ID must not exceed 20 characters</div>
+                    }
+                    @if (userId.errors?.['userIdTaken']) {
+                      <div>This User ID is already taken</div>
+                    }
+                  </div>
+                }
+                @if (userId.pending) {
+                  <div class="text-info small mt-1">
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Checking availability...
+                  </div>
+                }
+              </div>
+
+              <!-- Email Field -->
+              <div class="col-12 mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input 
+                  type="email" 
+                  class="form-control"
+                  [class.is-invalid]="email.invalid && email.touched"
+                  [class.is-valid]="email.valid && email.touched"
+                  id="email" 
+                  formControlName="email"
+                  placeholder="Enter email address">
+                @if (email.invalid && email.touched) {
+                  <div class="invalid-feedback">
+                    @if (email.errors?.['required']) {
+                      <div>Email is required</div>
+                    }
+                    @if (email.errors?.['email']) {
+                      <div>Please enter a valid email address</div>
+                    }
+                    @if (email.errors?.['emailTaken']) {
+                      <div>This email address is already registered</div>
+                    }
+                  </div>
+                }
+                @if (email.pending) {
+                  <div class="text-info small mt-1">
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                    Verifying email...
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- First Name Field -->
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="firstName.invalid && firstName.touched"
+                  [class.is-valid]="firstName.valid && firstName.touched"
+                  id="firstName" 
+                  formControlName="firstName"
+                  placeholder="Enter first name">
+                @if (firstName.invalid && firstName.touched) {
+                  <div class="invalid-feedback">
+                    @if (firstName.errors?.['required']) {
+                      <div>First name is required</div>
+                    }
+                    @if (firstName.errors?.['minlength']) {
+                      <div>First name must be at least 2 characters long</div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Last Name Field -->
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="lastName.invalid && lastName.touched"
+                  [class.is-valid]="lastName.valid && lastName.touched"
+                  id="lastName" 
+                  formControlName="lastName"
+                  placeholder="Enter last name">
+                @if (lastName.invalid && lastName.touched) {
+                  <div class="invalid-feedback">
+                    @if (lastName.errors?.['required']) {
+                      <div>Last name is required</div>
+                    }
+                    @if (lastName.errors?.['minlength']) {
+                      <div>Last name must be at least 2 characters long</div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Department Field -->
+            <div class="mb-3">
+              <label for="departmentId" class="form-label">Department</label>
+              @if (isLoadingDepartments()) {
+                <div class="form-control d-flex align-items-center">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Loading departments...
+                </div>
+              } @else {
+                <select 
+                  class="form-select"
+                  [class.is-invalid]="departmentId.invalid && departmentId.touched"
+                  [class.is-valid]="departmentId.valid && departmentId.touched"
+                  id="departmentId" 
+                  formControlName="departmentId">
+                  <option value="">Select a department</option>
+                  @for (dept of departments(); track dept.id) {
+                    <option [value]="dept.id">{{ dept.name }}</option>
+                  }
+                </select>
+              }
+              @if (departmentId.invalid && departmentId.touched) {
+                <div class="invalid-feedback">
+                  @if (departmentId.errors?.['required']) {
+                    <div>Please select a department</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="row">
+              <!-- Password Field -->
+              <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input 
+                  type="password" 
+                  class="form-control"
+                  [class.is-invalid]="password.invalid && password.touched"
+                  [class.is-valid]="password.valid && password.touched"
+                  id="password" 
+                  formControlName="password"
+                  placeholder="Enter password">
+                @if (password.invalid && password.touched) {
+                  <div class="invalid-feedback">
+                    @if (password.errors?.['required']) {
+                      <div>Password is required</div>
+                    }
+                    @if (password.errors?.['passwordStrength']) {
+                      <div class="password-requirements">
+                        <div class="small">Password must contain:</div>
+                        <ul class="small mt-1 mb-0">
+                          <li [class.text-success]="password.errors?.['passwordStrength']?.hasLower" 
+                              [class.text-danger]="!password.errors?.['passwordStrength']?.hasLower">
+                            At least one lowercase letter
+                          </li>
+                          <li [class.text-success]="password.errors?.['passwordStrength']?.hasUpper" 
+                              [class.text-danger]="!password.errors?.['passwordStrength']?.hasUpper">
+                            At least one uppercase letter
+                          </li>
+                          <li [class.text-success]="password.errors?.['passwordStrength']?.hasNumber" 
+                              [class.text-danger]="!password.errors?.['passwordStrength']?.hasNumber">
+                            At least one number
+                          </li>
+                          <li [class.text-success]="password.errors?.['passwordStrength']?.hasSpecial" 
+                              [class.text-danger]="!password.errors?.['passwordStrength']?.hasSpecial">
+                            At least one special character (#?!@$%^&*-)
+                          </li>
+                          <li [class.text-success]="password.errors?.['passwordStrength']?.isLengthValid" 
+                              [class.text-danger]="!password.errors?.['passwordStrength']?.isLengthValid">
+                            At least 8 characters long
+                          </li>
+                        </ul>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Confirm Password Field -->
+              <div class="col-md-6 mb-4">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input 
+                  type="password" 
+                  class="form-control"
+                  [class.is-invalid]="confirmPassword.invalid && confirmPassword.touched"
+                  [class.is-valid]="confirmPassword.valid && confirmPassword.touched"
+                  id="confirmPassword" 
+                  formControlName="confirmPassword"
+                  placeholder="Confirm password">
+                @if (confirmPassword.invalid && confirmPassword.touched) {
+                  <div class="invalid-feedback">
+                    @if (confirmPassword.errors?.['required']) {
+                      <div>Please confirm your password</div>
+                    }
+                    @if (confirmPassword.errors?.['passwordMismatch']) {
+                      <div>Passwords do not match</div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="d-flex gap-2 mb-3">
+              <button 
+                type="submit" 
+                class="btn btn-primary flex-fill"
+                [disabled]="createUserForm.invalid || isSubmitting()">
+                @if (isSubmitting()) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Creating User...
+                } @else {
+                  Create User
+                }
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-outline-secondary"
+                (click)="onCancel()"
+                [disabled]="isSubmitting()">
+                Cancel
+              </button>
+            </div>
+          </form>
+
+          <!-- Back to Login Link -->
+          <div class="text-center">
+            <p class="text-muted mb-2">Already have an account?</p>
+            <a routerLink="/login" class="btn btn-link p-0">Back to Login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

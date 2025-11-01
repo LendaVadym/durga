@@ -1,0 +1,11 @@
+// App Component Styles
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+// Main app container styles
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+// Global app-specific styles can be added here

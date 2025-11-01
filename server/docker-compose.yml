@@ -1,20 +1,21 @@
 version: '3.8'
 
 services:
-  # SQL Server database
-  sql-server:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=DurgaServer2024!
-      - MSSQL_PID=Developer
+      - POSTGRES_DB=DurgaDb
+      - POSTGRES_USER=durga_user
+      - POSTGRES_PASSWORD=DurgaServer2024!
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - sql-server-data:/var/opt/mssql
+      - postgres-data:/var/lib/postgresql/data
+      - ./db_install/sql/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P DurgaServer2024! -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "pg_isready -U durga_user -d DurgaDb"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -27,11 +28,11 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      sql-server:
+      postgres:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sql-server,1433;Database=DurgaDb;User Id=sa;Password=DurgaServer2024!;TrustServerCertificate=true;MultipleActiveResultSets=true
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=DurgaDb;Username=durga_user;Password=DurgaServer2024!
       - JWT__SecretKey=ThisIsAVeryLongSecretKeyForJWTTokens123456789
       - JWT__Issuer=Durga.Api
       - JWT__Audience=Durga.Client
@@ -47,4 +48,4 @@ networks:
     driver: bridge
 
 volumes:
-  sql-server-data:
+  postgres-data:

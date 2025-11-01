@@ -21,8 +21,8 @@ jobs:
       with:
         dotnet-version: 9.0.x
     - name: Restore dependencies
-      run: dotnet restore Durga.sln
+      run: dotnet restore server/Durga.sln
     - name: Build
-      run: dotnet build Durga.sln --no-restore
+      run: dotnet build server/Durga.sln --no-restore
     - name: Test
-      run: dotnet test Durga.sln --no-build --verbosity normal
+      run: dotnet test server/Durga.sln --no-build --verbosity normal
